@@ -1,1 +1,4 @@
-<p>user-form works!</p>
+<h2>{{currentStepDescription}}</h2>
+<button (click)="goToNextStep()">Next</button>
+<mat-progress-bar mode="determinate" color="primary" [value]="getProgress()">
+</mat-progress-bar>
