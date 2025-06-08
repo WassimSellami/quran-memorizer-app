@@ -1,4 +1,43 @@
 <h2>{{currentStepDescription}}</h2>
-<button (click)="goToNextStep()">Next</button>
+
+<div *ngIf="currentStepNumber === 1">
+    <select id="unit" [(ngModel)]='formData.unit' required>
+        <option *ngFor="let option of unitTypeOptions" [value]="option.value">
+            {{option.label}}
+        </option>
+    </select>
+</div>
+
+<div *ngIf="currentStepNumber === 2">
+    <label>{{unitTypeOptions[formData.unit].label}} Number: </label>
+    <input id="startUnit" type="text" [(ngModel)]='formData.startUnit' required />
+</div>
+
+<div *ngIf="currentStepNumber === 3">
+    <label>{{unitTypeOptions[formData.unit].label}} Number: </label>
+    <input id="endUnit" type="text" [(ngModel)]='formData.endUnit' required />
+</div>
+
+<div *ngIf="currentStepNumber === 4">
+    <input id="memDays" type="number" [(ngModel)]='formData.memDays' required />
+</div>
+
+<div *ngIf="currentStepNumber === 5">
+    <input id="revDays" type="text" [(ngModel)]='formData.revDays' required />
+</div>
+
+<div *ngIf="currentStepNumber === 6">
+    <input id="restDays" type="number" [(ngModel)]='formData.restDays' required />
+</div>
+
+<div *ngIf="currentStepNumber === 7">
+    <input id="startDate" type="date" [(ngModel)]='formData.startDate' required />
+</div>
+
+<div>
+    <button (click)="goToPreviousStep()">Back</button>
+    <button (click)="goToNextStep()">Next</button>
+</div>
+
 <mat-progress-bar mode="determinate" color="primary" [value]="getProgress()">
 </mat-progress-bar>
