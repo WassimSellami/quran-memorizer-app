@@ -1,7 +1,7 @@
 <h2>{{currentStepDescription}}</h2>
 
 <div *ngIf="currentStepNumber === 1">
-    <select id="unitType" [(ngModel)]='formData.unitType' required>
+    <select [(ngModel)]='formData.memorizationUnit' required>
         <option *ngFor="let option of unitTypeOptions" [value]="option.value">
             {{option.label}}
         </option>
@@ -9,29 +9,29 @@
 </div>
 
 <div *ngIf="currentStepNumber === 2">
-    <label>{{unitTypeOptions[formData.unitType].label}} Number: </label>
-    <input id="startUnit" type="text" [(ngModel)]='formData.startUnit' required />
+    <label>{{unitTypeOptions[formData.memorizationUnit].label}} Number: </label>
+    <input type="text" [(ngModel)]='formData.startUnit' required />
 </div>
 
 <div *ngIf="currentStepNumber === 3">
-    <label>{{unitTypeOptions[formData.unitType].label}} Number: </label>
-    <input id="endUnit" type="text" [(ngModel)]='formData.endUnit' required />
+    <label>{{unitTypeOptions[formData.memorizationUnit].label}} Number: </label>
+    <input type="text" [(ngModel)]='formData.endUnit' required />
 </div>
 
 <div *ngIf="currentStepNumber === 4">
-    <input id="memDays" type="number" [(ngModel)]='formData.memDays' required />
+    <input type="number" [(ngModel)]='formData.memorizationDaysPerCycle' required />
 </div>
 
 <div *ngIf="currentStepNumber === 5">
-    <input id="revDays" type="text" [(ngModel)]='formData.revDays' required />
+    <input type="text" [(ngModel)]='formData.revisionDaysPerCycle' required />
 </div>
 
 <div *ngIf="currentStepNumber === 6">
-    <input id="restDays" type="number" [(ngModel)]='formData.restDays' required />
+    <input type="number" [(ngModel)]='formData.restDaysPerCycle' required />
 </div>
 
 <div *ngIf="currentStepNumber === 7">
-    <input id="startDate" type="date" [(ngModel)]='formData.startDate' required />
+    <input type="date" [(ngModel)]='formData.startDate' required />
 </div>
 
 <div *ngIf="currentStepNumber === 8">
