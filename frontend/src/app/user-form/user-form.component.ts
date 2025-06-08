@@ -24,20 +24,23 @@ export class UserFormComponent {
     'startDate': '2025-06-11',
   };
 
-  steps = ['memorizationUnit', 'startUnit', 'endUnit', 'memorizationDaysPerCycle', 'revisionDaysPerCycle', 'restDaysPerCycle', 'startDate', 'preview'];
+  steps = ['memorizationUnit', 'startUnit', 'endUnit', 'memorizationDaysPerCycle', 'revisionDaysPerCycle', 'restDaysPerCycle', 'startDate', 'previewPlan', 'fullPlan', 'download'];
 
   stepDescriptions: { [key: string]: string } = {
-    'memorizationUnit': 'how much do you want to memorize per day?',
+    'memorizationUnit': 'How much do you want to memorize per day?',
     'startUnit': 'Where do you want to start memorizing from?',
     'endUnit': 'Where do you want to end?',
     'memorizationDaysPerCycle': 'How many days do you want to memorize per cycle?',
     'revisionDaysPerCycle': 'How many days do you want to revise per cycle?',
     'restDaysPerCycle': 'How many days do you want to rest per cycle?',
     'startDate': 'When Do you want to start your trip?',
-    'preview': 'Done! Now you can generate a preview of your plan!',
+    'previewPlan': 'Done! Now you can generate a preview of your plan!',
+    'fullPlan': 'Here is a preview of your plan! If you like it you can now generate the full plan',
+    'download': 'Congratulations! Your plan is ready to download! Happy Memorization!',
   };
 
   inputJson = {};
+  previewPlan = 'empty preview plan';
   currentStepNumber = 1
   currentStep = this.steps[this.currentStepNumber - 1];
   currentStepDescription = this.stepDescriptions[this.currentStep];
@@ -76,8 +79,8 @@ export class UserFormComponent {
   `.trim();
   }
 
-  generatePreview() {
-    this.inputJson = {
+  getFormattedInputJson() {
+    return {
       'memorizationUnit': UnitType[this.formData.memorizationUnit],
       'startUnit': this.formData.startUnit,
       'endUnit': this.formData.endUnit,
@@ -86,6 +89,22 @@ export class UserFormComponent {
       'restDaysPerCycle': this.formData.restDaysPerCycle,
       'startDate': this.formData.startDate
     };
-    console.log(this.inputJson)
+  }
+
+  generatePreview() {
+    this.goToNextStep();
+    var formattedJsonInput = this.getFormattedInputJson();
+    //post request
+    this.previewPlan = 'genrated preview plan';
+  }
+
+  generateFullPlan() {
+    this.goToNextStep();
+    //post request
+    console.log('Generating Full Plan ...');
+  }
+
+  downlaodFullPlan() {
+    console.log('downlaoding Full Plan');
   }
 }

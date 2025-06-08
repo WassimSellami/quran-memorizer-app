@@ -38,11 +38,16 @@
     <pre>{{ getFormattedSummary() }}</pre>
 </div>
 
+<div *ngIf="currentStepNumber === 9">
+    <pre>{{ previewPlan }}</pre>
+</div>
+
 <div>
     <button *ngIf="currentStepNumber !== 1" (click)="goToPreviousStep()">Back</button>
-    <button *ngIf="currentStepNumber !== 8" (click)="goToNextStep()">Next</button>
+    <button *ngIf="currentStepNumber < 8" (click)="goToNextStep()">Next</button>
     <button *ngIf="currentStepNumber === 8" (click)=" generatePreview()">Generate Preview</button>
-
+    <button *ngIf="currentStepNumber === 9" (click)="generateFullPlan()">Generate Full Plan</button>
+    <button *ngIf="currentStepNumber === 10" (click)="downlaodFullPlan()">Download Full Plan</button>
 </div>
 
 <mat-progress-bar mode="determinate" color="primary" [value]="getProgress()">
