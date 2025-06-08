@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GptService } from '../services/gpt.service';
 
 enum UnitType { Thomn = 0, Page = 1 }
 
@@ -9,6 +10,8 @@ enum UnitType { Thomn = 0, Page = 1 }
 })
 
 export class UserFormComponent {
+  constructor(private gptService: GptService) { }
+
   unitTypeOptions = [
     { label: 'Thomn', value: UnitType.Thomn },
     { label: 'Page', value: UnitType.Page }
@@ -40,7 +43,7 @@ export class UserFormComponent {
   };
 
   inputJson = {};
-  previewPlan = 'empty preview plan';
+  previewPlan = 'Generating Preview Plan';
   currentStepNumber = 1
   currentStep = this.steps[this.currentStepNumber - 1];
   currentStepDescription = this.stepDescriptions[this.currentStep];
@@ -94,8 +97,14 @@ export class UserFormComponent {
   generatePreview() {
     this.goToNextStep();
     var formattedJsonInput = this.getFormattedInputJson();
-    //post request
-    this.previewPlan = 'genrated preview plan';
+    this.gptService.generatePreview(formattedJsonInput).subscribe({
+      next: (response: string) => {
+        this.previewPlan = response;
+      },
+      error: (err) => {
+        console.error('Error getting preview:', err);
+      }
+    })
   }
 
   generateFullPlan() {

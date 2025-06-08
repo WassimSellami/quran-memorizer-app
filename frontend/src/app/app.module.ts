@@ -9,7 +9,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
-
+import { HttpClientModule } from '@angular/common/http'
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +22,9 @@ import { FormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     MatProgressBarModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    HttpClientModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]
