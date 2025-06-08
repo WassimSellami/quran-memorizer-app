@@ -9,14 +9,14 @@ export class GptService {
 
   constructor(private http: HttpClient) { }
 
-  generatePreview(prompt: any): Observable<string> {
+  generatePreview(userInput: any): Observable<string> {
     const body = {
-      title: JSON.stringify(prompt)
+      userInput: JSON.stringify(userInput)
     }
     return this.http
-      .post<{ title: string }>('https://dummyjson.com/products/add', body)
+      .post<{ preview: string }>('http://localhost:3000/api/gpt/preview', body)
       .pipe(
-        map(response => response.title)
+        map(response => response.preview)
       );
   }
 }
