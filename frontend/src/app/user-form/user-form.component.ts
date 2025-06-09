@@ -42,10 +42,13 @@ export class UserFormComponent {
     'download': 'Congratulations! Your plan is ready to download! Happy Memorization!',
   };
 
+  previewHeaders: string[] = [];
+  previewRows: string[][] = [];
+  estimatedCompletionDate: string = '';
+  isPreviewReady: boolean = false
+
   inputJson = {};
-  isPreviewReady = false
-  previewCSV = '';
-  estimatedCompletionDate = '';
+
   currentStepNumber = 1
   currentStep = this.steps[this.currentStepNumber - 1];
   currentStepDescription = this.stepDescriptions[this.currentStep];
@@ -96,20 +99,39 @@ export class UserFormComponent {
     };
   }
 
-  generatePreview() {
+  private parsePreviewCSV(csvText: string): void {
+    const headerMap: { [key: string]: string } = {
+      'Date': 'Date',
+      'Day_Type': 'Task',
+      'Start': 'From',
+      'End': 'To'
+    };
+
+    const rows: string[] = csvText.trim().split('\n');
+    const originalHeaders: string[] = rows.shift()!.split(',');
+
+    this.previewHeaders = originalHeaders.map((h: string) => headerMap[h] || h);
+
+    this.previewRows = rows.map((row: string) =>
+      row.split(',').map((cell: string) => cell.trim() === 'N/A' ? '-' : cell.trim())
+    );
+  }
+
+  generatePreview(): void {
     this.isPreviewReady = false;
     this.goToNextStep();
-    var formattedJsonInput = this.getFormattedInputJson();
+    const formattedJsonInput = this.getFormattedInputJson();
+
     this.gptService.generatePreview(formattedJsonInput).subscribe({
       next: (response: any) => {
-        this.previewCSV = response.previewCSV;
-        this.estimatedCompletionDate = response.estimatedCompletionDate
+        this.estimatedCompletionDate = response.estimatedCompletionDate;
+        this.parsePreviewCSV(response.previewCSV);
         this.isPreviewReady = true;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error getting preview:', err);
       }
-    })
+    });
   }
 
   generateFullPlan() {
