@@ -39,16 +39,17 @@ export class UserFormComponent {
     'startDate': 'When Do you want to start your trip?',
     'previewPlan': 'Done! Now you can generate a preview of your plan!',
     'fullPlan': 'Here is a preview of your plan! If you like it you can now generate the full plan',
-    'download': 'Congratulations! Your plan is ready to download! Happy Memorization!',
+    'download': 'Congratulations! Your plan is ready to download!',
   };
 
   csvHeaders: string[] = [];
   previewPlanRows: string[][] = [];
-  fullPlanRows: string[][] = [];
+  fullPlanCSV: string = ''
 
   estimatedCompletionDate: string = '';
   isPreviewPlanReady: boolean = false
   isFullPlanReady: boolean = false
+  isDownloading: boolean = false
 
   inputJson = {};
   formattedUserInput = {};
@@ -110,7 +111,6 @@ export class UserFormComponent {
     this.previewPlanRows = rows.map((row: string) =>
       row.split(',').map((cell: string) => cell.trim())
     );
-    console.log(this.previewPlanRows);
   }
 
   generatePreviewPlan(): void {
@@ -135,7 +135,7 @@ export class UserFormComponent {
     this.goToNextStep();
     this.gptService.generateFullPlan(this.formattedUserInput).subscribe({
       next: (response: any) => {
-        this.parsePlanCSV(response.planCSV);
+        this.fullPlanCSV = response.planCSV;
         this.isFullPlanReady = true;
       },
       error: (err: any) => {
@@ -144,7 +144,18 @@ export class UserFormComponent {
     });
   }
 
-  downlaodFullPlan() {
-    console.log('downlaoding Full Plan');
+  downloadFullPlan(): void {
+    this.isDownloading = true;
+
+    const blob = new Blob([this.fullPlanCSV], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'full-plan.csv';
+    anchor.click();
+
+    window.URL.revokeObjectURL(url);
+    this.isDownloading = false;
   }
 }
