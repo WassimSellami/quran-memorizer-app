@@ -6,8 +6,8 @@ export const getPreview = async (req, res) => {
         if (!userInput) {
             return res.status(400).json({ error: 'userInput' });
         }
-        const preview = await gptService.createOrder(userInput);
-        res.status(201).json({ preview });
+        const response = await gptService.getPreview(userInput);
+        res.status(201).json({ response });
     } catch (err) {
         console.log(err.message)
         res.status(500).json({ error: 'Internal Server Error' });

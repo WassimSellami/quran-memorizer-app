@@ -14,9 +14,9 @@ export class GptService {
       userInput: JSON.stringify(userInput)
     }
     return this.http
-      .post<{ preview: string }>('http://localhost:3000/api/gpt/preview', body)
+      .post<{ response: any }>('http://localhost:3000/api/gpt/preview', body)
       .pipe(
-        map(response => response.preview)
+        map(response => response.response)
       );
   }
 }

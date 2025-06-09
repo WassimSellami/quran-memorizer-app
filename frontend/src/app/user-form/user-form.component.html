@@ -39,7 +39,14 @@
 </div>
 
 <div *ngIf="currentStepNumber === 9">
-    <pre>{{ previewPlan }}</pre>
+    <div *ngIf="isPreviewReady">
+        <h4>Estimated Completion date: {{estimatedCompletionDate}}</h4>
+        <h4>Plan Preview</h4>
+        <pre>{{ previewCSV }}</pre>
+    </div>
+    <div *ngIf="!isPreviewReady">
+        <h4>Generating Plan Preview ...</h4>
+    </div>
 </div>
 
 <div>

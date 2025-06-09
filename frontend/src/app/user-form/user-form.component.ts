@@ -43,7 +43,9 @@ export class UserFormComponent {
   };
 
   inputJson = {};
-  previewPlan = 'Generating Preview Plan';
+  isPreviewReady = false
+  previewCSV = '';
+  estimatedCompletionDate = '';
   currentStepNumber = 1
   currentStep = this.steps[this.currentStepNumber - 1];
   currentStepDescription = this.stepDescriptions[this.currentStep];
@@ -95,11 +97,14 @@ export class UserFormComponent {
   }
 
   generatePreview() {
+    this.isPreviewReady = false;
     this.goToNextStep();
     var formattedJsonInput = this.getFormattedInputJson();
     this.gptService.generatePreview(formattedJsonInput).subscribe({
-      next: (response: string) => {
-        this.previewPlan = response;
+      next: (response: any) => {
+        this.previewCSV = response.previewCSV;
+        this.estimatedCompletionDate = response.estimatedCompletionDate
+        this.isPreviewReady = true;
       },
       error: (err) => {
         console.error('Error getting preview:', err);
