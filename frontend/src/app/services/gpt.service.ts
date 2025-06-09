@@ -9,12 +9,22 @@ export class GptService {
 
   constructor(private http: HttpClient) { }
 
-  generatePreview(userInput: any): Observable<string> {
+  generatePreviewPlan(userInput: any): Observable<string> {
     const body = {
       userInput: JSON.stringify(userInput)
     }
     return this.http
-      .post<{ response: any }>('http://localhost:3000/api/gpt/preview', body)
+      .post<{ response: any }>('http://localhost:3000/api/gpt/plan/preview', body)
+      .pipe(
+        map(response => response.response)
+      );
+  }
+  generateFullPlan(userInput: any): Observable<string> {
+    const body = {
+      userInput: JSON.stringify(userInput)
+    }
+    return this.http
+      .post<{ response: any }>('http://localhost:3000/api/gpt/plan/full', body)
       .pipe(
         map(response => response.response)
       );

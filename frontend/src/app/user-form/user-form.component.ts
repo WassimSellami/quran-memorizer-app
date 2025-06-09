@@ -20,7 +20,7 @@ export class UserFormComponent {
   formData = {
     'memorizationUnit': UnitType.Thomn,
     'startUnit': 'H1T1',
-    'endUnit': 'H15T8',
+    'endUnit': 'H1T8',
     'memorizationDaysPerCycle': 2,
     'revisionDaysPerCycle': 2,
     'restDaysPerCycle': 1,
@@ -42,12 +42,16 @@ export class UserFormComponent {
     'download': 'Congratulations! Your plan is ready to download! Happy Memorization!',
   };
 
-  previewHeaders: string[] = [];
-  previewRows: string[][] = [];
+  csvHeaders: string[] = [];
+  previewPlanRows: string[][] = [];
+  fullPlanRows: string[][] = [];
+
   estimatedCompletionDate: string = '';
-  isPreviewReady: boolean = false
+  isPreviewPlanReady: boolean = false
+  isFullPlanReady: boolean = false
 
   inputJson = {};
+  formattedUserInput = {};
 
   currentStepNumber = 1
   currentStep = this.steps[this.currentStepNumber - 1];
@@ -99,34 +103,26 @@ export class UserFormComponent {
     };
   }
 
-  private parsePreviewCSV(csvText: string): void {
-    const headerMap: { [key: string]: string } = {
-      'Date': 'Date',
-      'Day_Type': 'Task',
-      'Start': 'From',
-      'End': 'To'
-    };
-
+  private parsePlanCSV(csvText: string): void {
     const rows: string[] = csvText.trim().split('\n');
-    const originalHeaders: string[] = rows.shift()!.split(',');
+    this.csvHeaders = rows.shift()!.split(',');
 
-    this.previewHeaders = originalHeaders.map((h: string) => headerMap[h] || h);
-
-    this.previewRows = rows.map((row: string) =>
-      row.split(',').map((cell: string) => cell.trim() === 'N/A' ? '-' : cell.trim())
+    this.previewPlanRows = rows.map((row: string) =>
+      row.split(',').map((cell: string) => cell.trim())
     );
+    console.log(this.previewPlanRows);
   }
 
-  generatePreview(): void {
-    this.isPreviewReady = false;
+  generatePreviewPlan(): void {
+    this.isPreviewPlanReady = false;
     this.goToNextStep();
-    const formattedJsonInput = this.getFormattedInputJson();
+    this.formattedUserInput = this.getFormattedInputJson();
 
-    this.gptService.generatePreview(formattedJsonInput).subscribe({
+    this.gptService.generatePreviewPlan(this.formattedUserInput).subscribe({
       next: (response: any) => {
         this.estimatedCompletionDate = response.estimatedCompletionDate;
-        this.parsePreviewCSV(response.previewCSV);
-        this.isPreviewReady = true;
+        this.parsePlanCSV(response.previewCSV);
+        this.isPreviewPlanReady = true;
       },
       error: (err: any) => {
         console.error('Error getting preview:', err);
@@ -135,9 +131,17 @@ export class UserFormComponent {
   }
 
   generateFullPlan() {
+    this.isFullPlanReady = false;
     this.goToNextStep();
-    //post request
-    console.log('Generating Full Plan ...');
+    this.gptService.generateFullPlan(this.formattedUserInput).subscribe({
+      next: (response: any) => {
+        this.parsePlanCSV(response.planCSV);
+        this.isFullPlanReady = true;
+      },
+      error: (err: any) => {
+        console.error('Error getting full plan:', err);
+      }
+    });
   }
 
   downlaodFullPlan() {

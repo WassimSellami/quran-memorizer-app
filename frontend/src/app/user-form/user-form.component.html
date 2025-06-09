@@ -39,33 +39,43 @@
 </div>
 
 <div *ngIf="currentStepNumber === 9">
-    <div *ngIf="isPreviewReady" class="table-wrapper">
+    <div *ngIf="isPreviewPlanReady" class="table-wrapper">
         <h4>Estimated Completion date: {{estimatedCompletionDate}}</h4>
         <h4>Plan Preview</h4>
         <table class="preview-table">
             <thead>
                 <tr>
-                    <th *ngFor="let header of previewHeaders">{{ header }}</th>
+                    <th *ngFor="let header of csvHeaders">{{ header }}</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let row of previewRows">
+                <tr *ngFor="let row of previewPlanRows">
                     <td *ngFor="let cell of row">{{ cell || '-' }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <div *ngIf="!isPreviewReady">
+    <div *ngIf="!isPreviewPlanReady">
         <h4>Generating Plan Preview ...</h4>
+    </div>
+</div>
+
+<div *ngIf="currentStepNumber === 10">
+    <div *ngIf="isFullPlanReady">
+        <button (click)="downlaodFullPlan()">Download Full Plan</button>
+        <h3>Happy Memorization!</h3>
+    </div>
+    <div *ngIf="!isFullPlanReady">
+        <h4>Generating Full Plan ...</h4>
     </div>
 </div>
 
 <div>
     <button *ngIf="currentStepNumber !== 1" (click)="goToPreviousStep()">Back</button>
     <button *ngIf="currentStepNumber < 8" (click)="goToNextStep()">Next</button>
-    <button *ngIf="currentStepNumber === 8" (click)=" generatePreview()">Generate Preview</button>
-    <button *ngIf="currentStepNumber === 9" (click)="generateFullPlan()">Generate Full Plan</button>
-    <button *ngIf="currentStepNumber === 10" (click)="downlaodFullPlan()">Download Full Plan</button>
+    <button *ngIf="currentStepNumber === 8" (click)=" generatePreviewPlan()">Generate Preview</button>
+    <button *ngIf="currentStepNumber === 9 && isPreviewPlanReady" (click)="generateFullPlan()">Generate Full
+        Plan</button>
 </div>
 
 <mat-progress-bar mode="determinate" color="primary" [value]="getProgress()">
