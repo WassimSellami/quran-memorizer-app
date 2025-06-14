@@ -13,8 +13,8 @@ export class UserFormComponent {
   constructor(private gptService: GptService) { }
 
   unitTypeOptions = [
-    { label: 'Thomn', value: UnitType.Thomn },
-    { label: 'Page', value: UnitType.Page }
+    { label: 'THOMN_LABEL', value: UnitType.Thomn },
+    { label: 'PAGE_LABEL', value: UnitType.Page }
   ];
 
   formData = {
@@ -27,20 +27,7 @@ export class UserFormComponent {
     'startDate': '2025-06-11',
   };
 
-  steps = ['memorizationUnit', 'startUnit', 'endUnit', 'memorizationDaysPerCycle', 'revisionDaysPerCycle', 'restDaysPerCycle', 'startDate', 'previewPlan', 'fullPlan', 'download'];
-
-  stepDescriptions: { [key: string]: string } = {
-    'memorizationUnit': 'How much do you want to memorize per day?',
-    'startUnit': 'Where do you want to start memorizing from?',
-    'endUnit': 'Where do you want to end?',
-    'memorizationDaysPerCycle': 'How many days do you want to memorize per cycle?',
-    'revisionDaysPerCycle': 'How many days do you want to revise per cycle?',
-    'restDaysPerCycle': 'How many days do you want to rest per cycle?',
-    'startDate': 'When Do you want to start your trip?',
-    'previewPlan': 'Done! Now you can generate a preview of your plan!',
-    'fullPlan': 'Here is a preview of your plan! If you like it you can now generate the full plan',
-    'download': 'Congratulations! Your plan is ready to download!',
-  };
+  steps = ['MEMORIZATION_UNIT', 'START_UNIT', 'END_UNIT', 'MEMORIZATION_DAYS_PER_CYCLE', 'REVISION_DAYS_PER_CYCLE', 'REST_DAYS_PER_CYCLE', 'START_DATE', 'PREVIEW_PLAN', 'FULL_PLAN', 'DOWNLOAD'];
 
   csvHeaders: string[] = [];
   previewPlanRows: string[][] = [];
@@ -56,7 +43,6 @@ export class UserFormComponent {
 
   currentStepNumber = 1
   currentStep = this.steps[this.currentStepNumber - 1];
-  currentStepDescription = this.stepDescriptions[this.currentStep];
 
   getProgress(): number {
     return Math.round(this.currentStepNumber / this.steps.length * 100);
@@ -68,7 +54,6 @@ export class UserFormComponent {
       this.currentStepNumber = this.steps.length;
     }
     this.currentStep = this.steps[this.currentStepNumber - 1];
-    this.currentStepDescription = this.stepDescriptions[this.currentStep];
   }
 
   goToPreviousStep() {
@@ -77,7 +62,6 @@ export class UserFormComponent {
       this.currentStepNumber = 1;
     }
     this.currentStep = this.steps[this.currentStepNumber - 1];
-    this.currentStepDescription = this.stepDescriptions[this.currentStep];
   }
 
   getFormattedSummary() {
