@@ -30,5 +30,17 @@
         "GENERATING_FULL_PLAN": "Generating Full Plan ...",
         "GENERATING_PLAN_PREVIEW": "Generating Plan Preview ...",
         "HAPPY_MEMORIZATION": "Happy Memorization!"
+    },
+    "CSV_HEADERS": {
+        "DATE": "Date",
+        "TASK": "Daily Task",
+        "FROM": "From",
+        "TO": "To"
+    },
+    "TASK_LABELS": {
+        "MEMORIZE": "Memorize",
+        "REVISE": "Revise",
+        "MEMORIZE_PLUS_REVISE": "Memorize + Revise",
+        "REST": "Rest"
     }
 }

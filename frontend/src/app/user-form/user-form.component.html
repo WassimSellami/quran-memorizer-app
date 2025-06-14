@@ -45,15 +45,18 @@
         <table class="preview-table">
             <thead>
                 <tr>
-                    <th *ngFor="let header of csvHeaders">{{ header }}</th>
+                    <th *ngFor="let header of csvHeaders">{{ header | translate }}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let row of previewPlanRows">
-                    <td *ngFor="let cell of row">{{ cell || '-' }}</td>
+                    <td *ngFor="let cell of row; let i = index">
+                        {{ getTranslatedTask(cell, csvHeaders[i]) | translate }}
+                    </td>
                 </tr>
             </tbody>
         </table>
+
     </div>
     <div *ngIf="!isPreviewPlanReady">
         <h4>{{'MESSAGE.GENERATING_PLAN_PREVIEW' | translate}}</h4>

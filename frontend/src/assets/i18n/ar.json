@@ -28,7 +28,19 @@
     },
     "MESSAGE": {
         "GENERATING_FULL_PLAN": "يتم توليد الخطة الكاملة ...",
-        "GENERATING_PLAN_PREVIEW": "يتم توليد معاينة الخطة ...",
+        "GENERATING_PLAN_PREVIEW": "يتم توليد تصوّر أولي للخطة ...",
         "HAPPY_MEMORIZATION": "حفظًا مباركًا"
+    },
+    "CSV_HEADERS": {
+        "DATE": "التاريخ",
+        "TASK": "الواجب اليومي",
+        "FROM": "من",
+        "TO": "إلى"
+    },
+    "TASK_LABELS": {
+        "MEMORIZE": "حفظ",
+        "REVISE": "مراجعة",
+        "MEMORIZE_PLUS_REVISE": "حفظ + مراجعة",
+        "REST": "راحة"
     }
 }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { GptService } from '../services/gpt.service';
+import { TranslateService } from '@ngx-translate/core';
 
 enum UnitType { Thomn = 0, Page = 1 }
 
@@ -10,7 +11,7 @@ enum UnitType { Thomn = 0, Page = 1 }
 })
 
 export class UserFormComponent {
-  constructor(private gptService: GptService) { }
+  constructor(private gptService: GptService, private translate: TranslateService) { }
 
   unitTypeOptions = [
     { label: 'THOMN_LABEL', value: UnitType.Thomn },
@@ -88,14 +89,27 @@ export class UserFormComponent {
     };
   }
 
+  getTranslatedTask(task: string, header: string): string {
+    if (header !== "CSV_HEADERS.TASK") {
+      return task;
+    }
+    const normalized = task.toUpperCase().replace(/\s*\+\s*/g, '_PLUS_');
+    return `TASK_LABELS.${normalized}`;
+  }
+
+
+
   private parsePlanCSV(csvText: string): void {
     const rows: string[] = csvText.trim().split('\n');
-    this.csvHeaders = rows.shift()!.split(',');
+    const rawHeaders = rows.shift()!.split(',').map(h => h.trim().toUpperCase());
+
+    this.csvHeaders = rawHeaders.map(h => `CSV_HEADERS.${h}`);
 
     this.previewPlanRows = rows.map((row: string) =>
       row.split(',').map((cell: string) => cell.trim())
     );
   }
+
 
   generatePreviewPlan(): void {
     this.isPreviewPlanReady = false;
