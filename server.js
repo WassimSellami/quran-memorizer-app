@@ -6,7 +6,7 @@ import cron from 'node-cron';
 import { sendReminders } from './controllers/pushController.js';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 app.use(cors());
 app.use(express.json());
