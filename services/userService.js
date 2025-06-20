@@ -7,6 +7,12 @@ export const userService = {
         });
     },
 
+    getUserById: async (id) => {
+        return await User.findOne({
+            where: { id }
+        });
+    },
+
     getAllUsersIds: async () => {
         const users = await User.findAll({
             attributes: ['id']

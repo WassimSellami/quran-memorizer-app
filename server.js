@@ -22,7 +22,7 @@ app.use('/api/email', emailRoutes);
 
 cron.schedule('*/20 * * * * *', () => {
     console.log('Sending reminder every 20 seconds...');
-    emailService.sendReminders();
+    emailService.sendReminders('2025-07-14');
 });
 
 app.listen(port, () => {

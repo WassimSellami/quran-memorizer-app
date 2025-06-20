@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { userService } from './userService.js';
+import { taskService } from './taskService.js';
 
 dotenv.config();
-
-const subscriptions = [];
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -16,26 +16,30 @@ const transporter = nodemailer.createTransport({
 export const emailService = {
     subscribe: async (subscription) => {
         if (subscription) {
-            const alreadySubscribed = subscriptions.some(sub => sub.email === subscription.email);
-            if (alreadySubscribed) {
+            const user = await userService.getUserByEmail(subscription.email);
+            if (user) {
                 return { message: 'This email is already subscribed' }
             }
             else {
-                subscriptions.push(subscription);
+                const user = await userService.createUserByEmail(subscription.email);
                 await emailService.sendWelcomeEmail(subscription.email);
-                return { message: 'You are successfully subscribed!' };
+                await taskService.addTasksByUserId(user.dataValues.id, subscription.csv)
+                return { message: 'You have successfully subscribed!' };
             }
         }
     },
 
-    unsubscribe: (email) => {
-        const index = subscriptions.findIndex(sub => sub.email === email);
-        if (index !== -1) {
-            subscriptions.splice(index, 1);
-            emailService.sendUnsubscribeEmail(email);
-            return { message: 'Unsubscribed successfully.' }
-        } else {
-            return { message: 'Subscription not found.' }
+    unsubscribe: async (email) => {
+        if (email) {
+            const user = await userService.getUserByEmail(email);
+            if (user) {
+                await userService.deleteUserByEmail(email);
+                await emailService.sendUnsubscribeEmail(email);
+                return { message: 'You have unsubscribed successfully!' };
+            }
+            else {
+                return { message: 'This email is already unsubscribed' }
+            }
         }
     },
 
@@ -89,19 +93,22 @@ export const emailService = {
             `
         };
     },
-    sendReminderEmail: async (toEmail, csv) => {
-        const mailOptions = emailService.prepareReminderEmail(toEmail, 'Memorize', 'H1T1', 'H1T2');
+    sendReminderEmail: async (userId, date) => {
+        const user = await userService.getUserById(userId)
+        const task = await taskService.getTaskByDateAndUserId(userId, date)
+        const mailOptions = emailService.prepareReminderEmail(user.email, task.task, task.from, task.to);
         try {
             await transporter.sendMail(mailOptions);
-            console.log(`✅ Reminder email sent to ${toEmail}`);
+            console.log(`✅ Reminder email sent to ${user.email}`);
         } catch (error) {
             console.error('❌ Error sending reminder email:', error);
         }
     },
 
-    sendReminders: () => {
-        subscriptions.forEach(sub => {
-            emailService.sendReminderEmail(sub.email, sub.csv);
+    sendReminders: async (date) => {
+        const userIds = await userService.getAllUsersIds();
+        userIds.forEach(userId => {
+            emailService.sendReminderEmail(userId, date);
         });
     }
 };

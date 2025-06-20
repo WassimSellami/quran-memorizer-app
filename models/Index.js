@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import config from '../config/config.cjs';
+import config from '../config.cjs';
 import taskDefine from './Task.js';
 import userDefine from './UserS.js';
 

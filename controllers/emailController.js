@@ -12,8 +12,8 @@ export const subscribe = async (req, res) => {
     }
 };
 
-export const unsubscribe = (req, res) => {
+export const unsubscribe = async (req, res) => {
     const { email } = req.body;
-    const response = emailService.unsubscribe(email);
+    const response = await emailService.unsubscribe(email);
     return res.status(200).json({ response });
 };

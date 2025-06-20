@@ -1,9 +1,9 @@
 import { sequelize, Task } from '../models/Index.js'
 import { parse } from 'csv-parse/sync';
 
-export const userService = {
-    getAllTasksByDateAndUserId: async (id, date) => {
-        return await Task.findAll({
+export const taskService = {
+    getTaskByDateAndUserId: async (id, date) => {
+        return await Task.findOne({
             where: { user_id: id, date }
         });
     },
