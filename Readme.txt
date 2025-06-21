@@ -1,1 +1,1 @@
-Quran Memorizer App
+Quran Memorizer App Backend
