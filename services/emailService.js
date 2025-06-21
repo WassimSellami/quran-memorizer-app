@@ -4,9 +4,7 @@ import { userService } from './userService.js';
 import { taskService } from './taskService.js';
 
 dotenv.config();
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.error("❌ EMAIL_USER or EMAIL_PASS is missing in environment variables");
-}
+
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
