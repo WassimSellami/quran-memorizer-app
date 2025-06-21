@@ -64,50 +64,85 @@ const fullPlanInstructions = `
 
 **Your Instructions:**
 
-1.  **Input Processing:**
-    *   You will receive plan parameters as a JSON object in the fixed format specified below.
-    *   Parse this JSON object accurately to extract all parameters. Let \`params\` be the parsed JSON object.
-2.  **Core Calculations (Perform Silently & Accurately for Plan Generation):**
-    *   Convert \`params.startUnit\` and \`params.endUnit\` to linear numbers (if \`params.memorizationUnit\` is "Thomn", use (H-1)*8+T; if "Page", use the number directly from the string). Let these be \`Starting_Linear_Unit\` and \`Ending_Linear_Unit\`.
-    *   Calculate \`Total_Units = Ending_Linear_Unit - Starting_Linear_Unit + 1\`.
-    *   (Other calculations like cycle lengths, total days, etc., are needed internally to generate the plan but will not be part of the final output JSON).
-3.  **Daily Plan Generation Logic (for Full Plan CSV):**
-    *   Generate data for the **entire memorization plan** from \`Starting_Linear_Unit\` to \`Ending_Linear_Unit\`, applying the cycle logic until all \`Total_Units\` are covered.
-    *   **One Cycle Consists of:**
-        1.  **Memorization Segment (\`params.memorizationDaysPerCycle\` days):**
-            *   Day 1: \`Memorize\` (1st new unit of block). \`Start\`/\`End\` = new unit.
-            *   Days 2 to \`params.memorizationDaysPerCycle\`: \`Memorize+Revise\` (new unit for the day + revise block from 1st new unit up to current day's new unit). \`Start\` = 1st new unit of block, \`End\` = current day's new unit.
-        2.  **Revision Segment (\`params.revisionDaysPerCycle\` days):**
-            *   Each day: \`Revise\` (entire block of \`params.memorizationDaysPerCycle\` units memorized in this cycle's memorization segment). \`Start\` = 1st unit of block, \`End\` = last unit of block.
-        3.  **Rest Segment (\`params.restDaysPerCycle\` days):**
-            *   Each day: \`Rest\`. \`Start\`/\`End\` = -.
-    *   **Final (Partial) Cycle:** If remaining units < \`params.memorizationDaysPerCycle\` when starting the last cycle, adjust the "Memorization Segment" length accordingly. The Revision and Rest segments still follow based on \`params\`.
-    *   Format units back to HxTy or page number for CSV output based on \`params.memorizationUnit\`.
-4.  **Output Generation (Single JSON String Response with Only Plan CSV):**
-    *   **A. Generate Full Plan CSV String:** Create a CSV string for the **entire plan data** generated in step 3. Header: \`Date,Task,From,To\`.
-    *   **B. Construct and Output JSON String:** Your **entire and only response** must be a single, valid JSON string with the following structure. Populate it with the generated full plan CSV string:
-        \`\`\`json
-        {
-          "planCSV": "[String containing the generated CSV for the full plan]"
-        }
-        \`\`\`
-        (Ensure the \`planCSV\` value itself is a string, potentially containing escaped newlines if your CSV is multi-line.)
+1. **Input Processing:**
+   - You will receive plan parameters as a JSON object in the fixed format specified below.
+   - Parse this JSON object accurately to extract all parameters. Let \`params\` be the parsed JSON object.
+
+2. **Core Calculations (Perform Silently & Accurately for Plan Generation):**
+   - Convert \`params.startUnit\` and \`params.endUnit\` to linear numbers:
+     - If \`params.memorizationUnit\` is "Thomn", use (H - 1) * 8 + T.
+     - If "Page", use the number directly.
+   - Let these be \`Starting_Linear_Unit\` and \`Ending_Linear_Unit\`.
+   - Calculate \`Total_Units = Ending_Linear_Unit - Starting_Linear_Unit + 1\`.
+
+3. **Daily Plan Generation Logic (for Full Plan CSV):**
+   - Generate data for the **entire memorization plan** using the following cycle logic:
+   
+   - **Each Cycle Consists of:**
+     1. **Memorization Segment (\`params.memorizationDaysPerCycle\` days):**
+        - Day 1: \`Memorize\` → memorize 1st new unit. \`From = To = that unit\`.
+        - Days 2 to N: \`Memorize+Revise\` → memorize new unit of the day, and **revise only units memorized in this cycle so far**.
+          - \`From = first unit of current cycle block\`
+          - \`To = today’s new unit in this cycle\`
+
+     2. **Revision Segment (\`params.revisionDaysPerCycle\` days):**
+        - Each day: \`Revise\` → revise only the **current cycle’s block**.
+          - \`From = first unit of current cycle block\`
+          - \`To = last unit of current cycle block\`
+
+     3. **Rest Segment (\`params.restDaysPerCycle\` days):**
+        - Each day: \`Rest\`. \`From\` and \`To\` = "-".
+
+   - **Final (Partial) Cycle:** If remaining units < \`params.memorizationDaysPerCycle\`, shorten the memorization segment. Apply the same logic for revise/rest as usual.
+
+   - Format all unit numbers back to:
+     - HxTy if \`params.memorizationUnit\` is "Thomn".
+     - Page number string if \`params.memorizationUnit\` is "Page".
+
+4. **Output Generation (Single JSON String with Full Plan CSV):**
+   - **A. CSV Format:** \`Date,Task,From,To\`
+   - **B. Final Output Format:**
+   In Rest days, set both "From" and "To" to "-", not just one.
+
+   \`\`\`json
+   {
+     "planCSV": "[String containing the generated CSV for the full plan]"
+   }
+   \`\`\`
+   - Ensure the CSV string is valid, JSON-safe, and escaped correctly for newlines.
 
 **User Input:**
 `;
-function cleanupResponse(raw) {
-    const trimmed = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '');
-    const safelyEscaped = trimmed.replace(/"(.*?)"/gs, (match) => {
-        return match.replace(/\n/g, '\\n');
-    });
 
+
+
+function cleanupResponse(raw) {
     try {
-        return JSON.parse(safelyEscaped);
+        let cleaned = raw
+            .replace(/^```json\s*/i, '')
+            .replace(/```$/g, '')
+            .trim();
+        try {
+            return JSON.parse(cleaned);
+        } catch (firstError) {
+            console.warn("First parse attempt failed:", firstError.message);
+            cleaned = cleaned.replace(/"(?:[^"\\]|\\.)*?"/gs, (match) => {
+                return match.replace(/\n/g, '\\n');
+            });
+            try {
+                return JSON.parse(cleaned);
+            } catch (finalError) {
+                console.error("Failed to parse JSON after escaping:", finalError.message);
+                return null;
+            }
+        }
     } catch (e) {
-        console.error("Failed to parse JSON:", e);
+        console.error("Unexpected error during cleanup:", e);
         return null;
     }
 }
+
+
 
 const gptService = {
     getPreviewPlan: async (userInput) => {

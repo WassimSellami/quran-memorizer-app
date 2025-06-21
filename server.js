@@ -3,6 +3,7 @@ import cors from 'cors';
 import gptRoutes from './routes/gptRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
 import cron from 'node-cron';
+import dayjs from 'dayjs';
 import { emailService } from './services/emailService.js';
 
 const app = express();
@@ -18,9 +19,11 @@ app.get('/ping', (req, res) => {
     res.status(200).send('pong');
 });
 
-cron.schedule('*/20 * * * * *', () => {
-    console.log('Sending reminder every 20 seconds...');
-    emailService.sendReminders('2025-07-14');
+// cron.schedule('*/20 * * * * *', () => {
+cron.schedule('0 7 * * *', () => {
+    const today = dayjs().format('YYYY-MM-DD');
+    console.log(`Sending reminder for ${today}...`);
+    emailService.sendReminders(today);
 });
 
 app.listen(port, () => {
