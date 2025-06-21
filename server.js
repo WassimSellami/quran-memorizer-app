@@ -14,6 +14,10 @@ app.use(express.json());
 app.use('/api/gpt', gptRoutes);
 app.use('/api/email', emailRoutes);
 
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
+});
+
 cron.schedule('*/20 * * * * *', () => {
     console.log('Sending reminder every 20 seconds...');
     emailService.sendReminders('2025-07-14');
